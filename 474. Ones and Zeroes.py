@@ -1,0 +1,15 @@
+class Solution:
+    def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
+        # dp[i][j], from 0 to i index elements, j
+
+        dp = [[0] * (n+1) for _ in range(m+1)]
+
+        for s in strs:
+            zeroNum = s.count("0")
+            oneNum = s.count("1")
+
+            for i in range(m, zeroNum - 1, -1):
+                for j in range(n, oneNum - 1, -1):
+                    dp[i][j] = max(dp[i][j], dp[i-zeroNum][j-oneNum]+1)
+
+        return dp[m][n]
