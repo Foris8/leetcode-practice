@@ -1,27 +1,42 @@
-from sortedcontainers import SortedDict
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if not lists or len(lists) == 0:
+            return None
 
-class TimeMap:
-    def __init__(self):
-        self.key_time_map = {}
+        while len(lists) > 1:
+            mergedLists = []
 
-    def set(self, key: str, value: str, timestamp: int) -> None:
-        # If the 'key' does not exist in dictionary.
-        if not key in self.key_time_map:
-            self.key_time_map[key] = SortedDict()
-            
-        # Store '(timestamp, value)' pair in 'key' bucket.
-        self.key_time_map[key][timestamp] = value
-        
+            for i in range(0, len(lists), 2):
+                l1 = lists[i]
+                l2 = lists[i+1] if (i+1) < len(lists) else None
+                mergedLists.append(self.merge2Lists(l1, l2))
+            lists = mergedLists
 
-    def get(self, key: str, timestamp: int) -> str:
-        # If the 'key' does not exist in dictionary we will return empty string.
-        if not key in self.key_time_map:
-            return ""
-        
-        it = self.key_time_map[key].bisect_right(timestamp)
-        # If iterator points to first element it means, no time <= timestamp exists.
-        if it == 0:
-            return ""
-        
-        # Return value stored at previous position of current iterator.
-        return self.key_time_map[key].peekitem(it - 1)[1]
+        return lists[0]
+
+    def merge2Lists(self, l1, l2):
+        dummy = ListNode()
+        point = dummy
+
+        while l1 and l2:
+            if l1.val <= l2.val:
+                point.next = l1
+                l1 = l1.next
+            else:
+                point.next = l2
+                l2 = l2.next
+
+            point = point.next
+
+        if l1:
+            point.next = l1
+
+        if l2:
+            point.next = l2
+
+        return dummy.next
